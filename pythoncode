@@ -1,0 +1,90 @@
+#Created By Reggi Aryunadi
+#27 April 2023
+#github.com/Reggi Ar
+#reggi.aryunadi@gmail.com
+
+import sys
+from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QPushButton
+from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import QApplication, QPushButton, QWidget, QLabel
+import sys
+from PyQt5 import QtCore
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+
+class StopwatchWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Digital Stopwatch")
+        self.setGeometry(300, 300, 500, 300)
+        self.setStyleSheet("background-color:#F5E1E1;")
+
+        self.time = 0
+        self.is_running = False
+
+        #header
+        self.header = QLabel (self)
+        self.header.setFont(QFont("Helvetica",12))
+        self.header.setGeometry(10,10,480,60)
+        self.header.setText("ACCURATED \n DIGITAL STOPWATCH")
+        self.header.setStyleSheet("background-color:#B381B3; color:BLACK; border-radius:10px; border:1px solid; font-weight:bold ;")
+        self.header.setAlignment(QtCore.Qt.AlignCenter)
+
+        self.label = QLabel(self)
+        self.label.setStyleSheet("background-color: #8AC6A7; color:Black; border:1px solid black")
+        self.label.setGeometry(10, 80, 480, 100)
+        self.label.setFont(QFont("Helvetica",30))
+        self.label.setText("00:00:00.000")
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+
+        self.start_button = QPushButton("Start", self)
+        self.start_button.setGeometry(30, 200, 150, 60)
+        self.start_button.setStyleSheet("background-color:Red; color:WHITE; border-radius:10px; border:1px solid; font-weight:bold ;")
+        self.start_button.clicked.connect(self.start_stopwatch)
+
+        self.reset_button = QPushButton("Reset", self)
+        self.reset_button.setGeometry(200, 200, 150, 60)
+        self.reset_button.clicked.connect(self.reset_stopwatch)
+        self.reset_button.setStyleSheet("background-color:Green; color:WHITE; border-radius:10px; border:1px solid; font-weight:bold ;")
+
+        self.id=QLabel("Created by: Reggi Aryunadi => github.com/ReggiAr",self)
+        self.id.setFont(QFont("arial",8))
+        self.id.setGeometry(5,280,380,20)
+
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_time)
+
+    def start_stopwatch(self):
+        if not self.is_running:
+            self.timer.start(10)  # Update time every 10 milliseconds
+            self.is_running = True
+            self.start_button.setText("Stop")
+            self.start_button.setStyleSheet("background-color:Red; color:Black; border-radius:10px; border:1px solid; font-weight:bold ;")
+        else:
+            self.timer.stop()
+            self.is_running = False
+            self.start_button.setText("Start")
+            self.start_button.setStyleSheet("background-color:Red; color:White; border-radius:10px; border:1px solid; font-weight:bold ;")
+
+    def reset_stopwatch(self):
+        self.timer.stop()
+        self.is_running = False
+        self.time = 0
+        self.label.setText("00:00:00.000")
+        self.start_button.setText("Start")
+
+    def update_time(self):
+        self.time += 1
+        hours = self.time // 360000
+        minutes = (self.time // 6000) % 60
+        seconds = (self.time // 100) % 60
+        milliseconds = self.time % 100
+        time_str = f"{hours:02d}:{minutes:02d}:{seconds:02d}.{milliseconds:03d}"
+        self.label.setText(time_str)
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = StopwatchWindow()
+    window.show()
+    sys.exit(app.exec_())
